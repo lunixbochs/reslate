@@ -8,13 +8,13 @@ Getting Started
 
 1. Do you have Slate? [Get Slate.](https://github.com/jigish/slate)
 
-2. Clone this repo to somewhere convenient.
+2. `git clone https://github.com/lunixbochs/reslate.git` somewhere convenient.
 
-2. `ln -s "$(pwd)"/reslate.js ~/.reslate.js` (Run this in Terminal / bash).
+2. `ln -s "$(pwd)"/reslate.js ~/.reslate.js` (Run this in Terminal / bash inside the repo).
 
-3. `S.src('.reslate.js');` from `.slate.js` to use.
+3. `S.src('.reslate.js');` from `.slate.js` to use this if you're a Slate veteran.
 
-    If you're new to slate, copy my `slate.example.js` to `~/.slate.js` instead.
+    If you're new to Slate, copy my `slate.example.js` to `~/.slate.js` instead.
 
 4. Either way, look at [`slate.example.js`](/slate.example.js) for a full configuration.
 
