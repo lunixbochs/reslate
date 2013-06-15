@@ -42,7 +42,7 @@ THE SOFTWARE.
  *   - $.addNames(obj, callback):
  *          Adds name metadata to all methods of obj.
  *          You can pass an optional `callback(member, name) -> name`
- *          to override resulting namjs.
+ *          to override resulting names.
  *          Liberal use of this method makes for more readable $.backtrace()s.
  *
  *   - $.backtrace(error):
