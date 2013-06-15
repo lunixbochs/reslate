@@ -29,7 +29,7 @@ Your desktop has never looked better.
 
 Hyper Key
 -------
-You should probably set up a Hyper Key if you plan on using Slate and your computer at the same time.
+You should probably set up a Hyper key if you plan on using Slate and your computer at the same time.
 
 [Using PCKeyboardHack and KeyRemap4Macbook to create a Hyper key.](http://www.leancrew.com/all-this/2012/11/shift-control-option-command-on-caps-lock/)
 
