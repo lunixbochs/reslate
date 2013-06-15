@@ -20,6 +20,13 @@ Getting Started
 
 5. Reslate has a high ratio of comments to code. Dive into [`reslate.js`](/reslate.js) and hack away.
 
+What will Slate do for me?
+-------
+
+![Slate](http://bochs.info/img/slate.gif)
+
+Your desktop has never looked better.
+
 Hyper Key
 -------
 You should probably set up a Hyper Key if you plan on using Slate and your computer at the same time.
