@@ -3,7 +3,7 @@
  * Project: http://github.com/lunixbochs/reslate
  */
 
-S.src('reslate.js');
+S.src('.reslate.js');
 // enable to see debug messages in Console.app
 // $.debug = true;
 
