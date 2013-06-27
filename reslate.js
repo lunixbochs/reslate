@@ -695,13 +695,13 @@ _.extend($.window, {
             y = s.top();
         } else if (dir == 'right') {
             x = s.right() - this.width;
-            mid = x - s.midX();
+            mid = Math.abs(x - s.midX());
             if (this.width / mid < 0.05) {
                 x = s.midX();
             }
         } else if (dir == 'bottom') {
             y = s.bottom() - this.height;
-            mid = y - s.midY();
+            mid = Math.abs(y - s.midY());
             if (this.height / mid < 0.05) {
                 x = s.midY();
             }
