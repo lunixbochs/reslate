@@ -66,10 +66,14 @@ slate.bindAll({
         l: [$('barResize', 'right', 2),
             $('barResize', 'right', 1.5)],
         // corners
-        y: $('corner', 'top-left'),
-        i: $('corner', 'top-right'),
-        b: $('corner', 'bottom-left'),
-        m: $('corner', 'bottom-right'),
+        y: [$('corner', 'top-left'),
+            $('corner', 'top-left', 1.5)],
+        i: [$('corner', 'top-right'),
+            $('corner', 'top-right', 1.5)],
+        b: [$('corner', 'bottom-left'),
+            $('corner', 'bottom-left', 1.5)],
+        m: [$('corner', 'bottom-right'),
+            $('corner', 'bottom-right', 1.5)],
         // centers
         u: $('center', 'top'),
         n: $('center', 'bottom'),
