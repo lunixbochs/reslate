@@ -373,6 +373,8 @@ $ = (function() {
 (function() {
     var windows = {};
     var aliases = {};
+    var preHooks = [];
+    var postHooks = [];
 
     function appendModifier(key, modifier) {
         modifier = modifier.replace(':', ';');
@@ -382,6 +384,54 @@ $ = (function() {
             return key + ':' + modifier;
         }
     }
+
+    function makeCallback(key, op) {
+        var func;
+        if (_.isArray(op)) {
+            var ops = [];
+            _.each(op, function(o) {
+                o = makeCallback(key, o);
+                ops.push(o);
+            });
+            return $.chain.apply(null, ops);
+        } else if (_.isString(op)) {
+            var strOp = op;
+            func = function(win) {
+                win.op(strOp);
+            };
+        } else if (_.isFunction(op)) {
+            func = op;
+        } else {
+            S.log('unknown op:', op, typeof op);
+            return null;
+        }
+
+        return function(win) {
+            try {
+                _.each(preHooks, function(callback) {
+                    callback(key, win);
+                });
+            } catch (e) {
+                $.backtrace(e);
+                S.log('supressing exception in pre-hook.');
+            }
+            try {
+                return func(win);
+            } catch (e) {
+                $.backtrace(e);
+                throw e;
+            } finally {
+                try {
+                    _.each(postHooks, function(callback) {
+                        callback(key, win);
+                    });
+                } catch (e) {
+                    throw e;
+                }
+            }
+        };
+    }
+
     var _bind = slate.bind;
     _.extend(slate, {
         alias: function(alias, mod) {
@@ -390,6 +440,12 @@ $ = (function() {
         removeAlias: function(alias) {
             delete aliases[alias];
         },
+        pre: function(func) {
+            preHooks.push(func);
+        },
+        post: function(func) {
+            postHooks.push(func);
+        },
         bind: function(key, op) {
             _.each(aliases, function(mod, alias) {
                 key = key.replace(alias, mod);
@@ -397,13 +453,9 @@ $ = (function() {
             if (_.isObject(op) && !(_.isArray(op) || _.isFunction(op))) {
                 // nested modifiers
                 slate.bindAll(op, key);
+                return;
             }
-            if (_.isArray(op)) {
-                op = $.chain.apply(null, op);
-            }
-            if (_.isString(op)) {
-                op = slate.operationFromString(op);
-            }
+            op = makeCallback(key, op);
             if (_.isFunction(op)) {
                 function callback(win) {
                     if (win === undefined) {
@@ -418,16 +470,11 @@ $ = (function() {
                     } else {
                         win = windows[pid] = $.window(win);
                     }
-                    try {
-                        return op(win);
-                    } catch (e) {
-                        $.backtrace(e);
-                        throw e;
-                    }
+                    return op(win);
                 }
                 callback._hotkey = key;
                 _bind(key, callback);
-            } else {
+            } else if (op) {
                 _bind(key, op);
             }
         },
