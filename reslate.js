@@ -225,7 +225,7 @@ $ = (function() {
         },
         focus: function(name) {
             name = name.replace('"', '\"');
-            return slate.operationFromString('focus "' + name + '"');
+            return 'focus "' + name + '"';
         },
         chain: function() {
             var ops = [];
