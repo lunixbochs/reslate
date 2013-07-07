@@ -707,13 +707,13 @@ _.extend($.window, {
         var y = Math.min(this.y, s.bottom() - height);
         this.move({x: x, y: y});
         this._super.resize(args);
-        while (this.rect().height > height) {
+        while (this.rect().height > height + 1) {
             args.height -= 1;
             if (args.height < 0)
                 break;
             this._super.resize(args);
         }
-        while (this.rect().width > width) {
+        while (this.rect().width > width + 1) {
             args.width -= 1;
             if (args.width < 0)
                 break;
