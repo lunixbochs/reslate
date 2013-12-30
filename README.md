@@ -3,6 +3,25 @@ Reslate
 
 *A solid backbone for your `.slate.js.`*
 
+What does this add to Slate?
+-------
+
+High points include:
+ - Concise configuration.
+ - Extensibility - it wraps the Screen, Window, and Rect objects into proxy classes. You can extend these classes pretty easily using JavaScript prototypes.
+ - Many convenience methods:
+   - Reslate will take most object types in a binding and make sense of them.
+   - Nested object syntax for binding hotkeys (reduces need for repetition - see `slate.bindAll` in `slate.example.js`).
+   - Array syntax will do a `slate.chain` for you.
+   - Strings automatically map to slate's "operation" objects.
+ - Works around some issues in Slate:
+   - It's harder to lose a window offscreen.
+   - Some useless popups are silenced.
+ - When you hit an exception, you're provided with a full traceback if possible. You can also use $.backtrace to generate one yourself.
+ - The $ object ( https://github.com/lunixbochs/reslate/blob/master/reslate.js#L36 )
+
+You should compare the [reslate example config](https://github.com/lunixbochs/reslate/blob/master/slate.example.js) with [Slate's example JS config](https://github.com/jigish/dotfiles/blob/master/slate.js).
+
 Getting Started
 -------
 
