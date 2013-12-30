@@ -6,7 +6,6 @@ Reslate
 What does this add to Slate?
 -------
 
-High points include:
  - Concise configuration.
  - Extensibility - it wraps the Screen, Window, and Rect objects into proxy classes. You can extend these classes pretty easily using JavaScript prototypes.
  - Many convenience methods:
@@ -17,7 +16,7 @@ High points include:
  - Works around some issues in Slate:
    - It's harder to lose a window offscreen.
    - Some useless popups are silenced.
- - When you hit an exception, you're provided with a full traceback if possible. You can also use $.backtrace to generate one yourself.
+ - When you hit an exception, you're provided with a full traceback if possible (see them in Console.app). You can also use $.backtrace to generate one yourself.
  - The $ object ( https://github.com/lunixbochs/reslate/blob/master/reslate.js#L36 )
 
 You should compare the [reslate example config](https://github.com/lunixbochs/reslate/blob/master/slate.example.js) with [Slate's example JS config](https://github.com/jigish/dotfiles/blob/master/slate.js).
