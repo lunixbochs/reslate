@@ -759,6 +759,18 @@ _.extend($.window, {
         return this.toss.apply(this, arguments);
     },
     toss: function(num, resize) {
+        var count, current;
+        if (num === '+' || num === '-') {
+            count = slate.screenCount();
+            $.log('count', count);
+            current = this.screen().id();
+            $.log('current', current);
+            num = (num === '+') ? ++current : --current;
+            count--;
+            if (num > count) num = 0;
+            if (num < 0) num = count;
+            $.log('selected', num);
+        }
         var screen = slate.screenForRef(num.toString());
         var s = $.screen(screen);
         if (resize)
