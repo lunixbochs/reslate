@@ -99,3 +99,36 @@ slate.bindAll({
         tab: 'hint'
     }
 });
+ 
+// Auto Snapshotting
+ 
+// Returns name generated from screen resolutions
+function name() {
+  var name = [];
+  slate.eachScreen(function(screen){
+    var rect = screen.rect()
+    name.push(rect.width+'x'+rect.height);
+  });
+  return name;
+}
+ 
+// Save snapshot
+function save(event, win){
+  $.log('saved', name());
+  slate.operation("snapshot", {
+    name: name().join(','),
+    save: true
+  });
+  slate.default(name(), name().join(','));
+};
+ 
+// Load snapshot
+function load(event, win){
+  $.log('loaded', name());
+  slate.operation("activate-snapshot", {
+    name: name().join(',')
+  });
+};
+ 
+slate.on('windowMoved', save);
+slate.on('windowResized', save);
