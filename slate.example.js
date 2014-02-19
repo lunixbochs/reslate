@@ -106,7 +106,7 @@ function save(event, win){
   slate.operation("snapshot", {
     name: name().join(','),
     save: true
-  });
+  }).run();
   slate.default(name(), name().join(','));
 };
  
@@ -115,7 +115,7 @@ function load(event, win){
   $.log('loaded', name());
   slate.operation("activate-snapshot", {
     name: name().join(',')
-  });
+  }).run();
 };
  
 slate.on('windowMoved', save);
