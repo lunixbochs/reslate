@@ -624,15 +624,13 @@ _.extend($.rect, {
 _.extend($.window, {
     barResize: function(dir, div, pos) {
         div = (div || 2);
-        // TODO: pos has been unimplemented
-        pos = (pos || 0);
         var s = this.screen();
         if (dir == 'left' || dir == 'right') {
-            this.divResize(div, 1);
-            this.snap(dir);
+	    this.divResize(div, 1, pos, 0);
+	    // this.snap(dir);
         } else if (dir == 'top' || dir == 'bottom') {
-            this.divResize(1, div);
-            this.snap(dir);
+	    this.divResize(1, div, 0, pos);
+	    // this.snap(dir);
         }
     },
     center: function(dir, horiz, vert) {
@@ -669,11 +667,12 @@ _.extend($.window, {
         this.divResize(horiz || 2, vert || 2);
         this.snap(corner);
     },
-    divResize: function(horiz, vert) {
+    divResize: function(horiz, vert, horizPos, vertPos) {
         var s = this.screen();
         var width = s.width / (horiz || 1);
         var height = s.height / (vert || 1);
         this.resize({width: width, height: height});
+	this.move({x: width * (horizPos || 0), y: height * (vertPos || 0)});
     },
     move: function(args) {
         // TODO: also allow calling with (x, y)
