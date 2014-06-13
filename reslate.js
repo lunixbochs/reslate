@@ -65,6 +65,9 @@ THE SOFTWARE.
  *          Wraps S.log(), toggled by $.debug.
  *          Look in Console.app for the output.
  *
+ *   - $.op(arguments):
+ *          Enables S.op() calls within a reslate bind.
+ *          EG:  $.op("resize", { "width" : "-10%", "height" : "+0"  })
  *
  * 2. $(...) is a convenience function for wrapping Window() methods
  *    inside key bindings
@@ -227,6 +230,14 @@ $ = (function() {
             name = name.replace('"', '\"');
             return 'focus "' + name + '"';
         },
+        op: function() {
+            $.log('op', JSON.stringify(arguments));
+            var args=arguments;
+            return function(win) {
+                var JSOperationWrapper = S.op.apply(win, args);
+                JSOperationWrapper.run();
+            };
+        },
         chain: function() {
             var ops = [];
             _.each(arguments, function(op) {
@@ -284,7 +295,7 @@ $ = (function() {
             'title', 'topLeft', 'size', 'rect', 'pid',
             'focus', 'isMinimizedOrHidden', 'isMain',
             'move', 'isMovable', 'resize', 'isResizable',
-            'doOperation', 'screen', 'app'
+            'doOperation', 'screen', 'app', 'op'
         ],
         _init: function(win) {
             if (win == undefined) {
