@@ -46,6 +46,22 @@ var rightRight= S.op("move", {
     "height" : "screenSizeY"
 });
 
+var rightRightTop= S.op("move", {
+    "screen" : 1,
+    "x" : "screenOriginX + screenSizeX/2",
+    "y" : "screenOriginY",
+    "width" : "screenSizeX/2",
+    "height" : "screenSizeY/2"
+});
+
+var rightRightBottom= S.op("move", {
+    "screen" : 1,
+    "x" : "+ screenSizeX/2",
+    "y" : "screenOriginY + screenSizeY/2",
+    "width" : "screenSizeX/2",
+    "height" : "screenSizeY/2"
+});
+
 var leftLeft= S.op("move", {
     "screen" : 0,
     "x" : "screenOriginX",
@@ -103,9 +119,23 @@ var twoScreenDevelopmentLayout = S.lay("twoScreenDev", {
        "repeat" : false
     }
 });
-
-S.def(2, twoScreenDevelopmentLayout);
 var twoScreenDev = S.op("layout", {"name" : twoScreenDevelopmentLayout});
+
+var gmailSonosLayout = S.lay("gmailSonosLayout", {
+    "Sonos" : {
+       "operations" : rightRightTop,
+       "ignore-fail" : true,
+       "repeat" : false
+    },
+    "Google Chrome" : {
+       "operations" : [rightLeft, rightRightBottom],
+       "ignore-fail" : true,
+       "repeat" : true,
+        "main-first": true
+    }
+});
+var gmailSonos = S.op("layout", {"name" : gmailSonosLayout});
+
 
 //bindings
 slate.bindAll({
@@ -114,6 +144,10 @@ slate.bindAll({
         d : function(win) {
             S.log('Running twoScreenDev layout');
             twoScreenDev.run();
+        },
+        g : function(win) {
+            S.log('Running gmail layout');
+            gmailSonos.run();
         },
 
         // Move window to side/corner. (1/2 --> 2/3 --> 1/3 --> centered 1/3):
