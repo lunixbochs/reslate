@@ -3,9 +3,9 @@
 
 S.log('Slate: loading config');
 
-S.src('~/dev/forks/reslate/reslate.js');
+S.src('~/.reslate.js');
 // enable to see debug messages in Console.app
-$.debug = true;
+$.debug = false;
 
 slate.alias('hyper', 'cmd;ctrl;alt');
 
@@ -122,33 +122,29 @@ var twoScreenDevelopmentLayout = S.lay("twoScreenDev", {
 var twoScreenDev = S.op("layout", {"name" : twoScreenDevelopmentLayout});
 
 var gmailSonosLayout = S.lay("gmailSonosLayout", {
-    "Sonos" : {
-       "operations" : rightRightTop,
-       "ignore-fail" : true,
-       "repeat" : false
-    },
     "Google Chrome" : {
        "operations" : [rightLeft, rightRightBottom],
        "ignore-fail" : true,
        "repeat" : true,
-        "main-first": true
+       "main-first": true
+    },
+    "Sonos" : {  // Weird - this isn't working. And I think it once did.
+       "operations" : [rightRightTop],
+       "ignore-fail" : true,
+       "repeat" : true
     }
 });
 var gmailSonos = S.op("layout", {"name" : gmailSonosLayout});
 
+var test=   S.op("resize", { "width": "-10%", "height": "+0", "anchor": "top-right" });
+$.log('Test: ', test);
 
 //bindings
 slate.bindAll({
     hyper: {
         // Layouts
-        d : function(win) {
-            S.log('Running twoScreenDev layout');
-            twoScreenDev.run();
-        },
-        g : function(win) {
-            S.log('Running gmail layout');
-            gmailSonos.run();
-        },
+        d: S.op("layout", {"name" : twoScreenDevelopmentLayout}),
+        g: S.op("layout", {"name" : gmailSonosLayout}),
 
         // Move window to side/corner. (1/2 --> 2/3 --> 1/3 --> centered 1/3):
         //   u i o
@@ -192,19 +188,19 @@ slate.bindAll({
 
         // Resize +10% - key determines which sides expands (Modal: hyper:h then j/l/i/,)
         h: {
-             j:   $.op("resize", { "width" : "+10%", "height" : "+0", "anchor" :"top-right" }),
-             l:   $.op("resize", { "width" : "+10%", "height" : "+0", "anchor" :"top-left"  }),
-             i:   $.op("resize", { "width" : "+0",   "height" : "+10%", "anchor" :"bottom-left" }),
-             ',':   $.op("resize", { "width" : "+0",   "height" : "+10%", "anchor" :"top-left" }),
+             j:   S.op("resize", { "width" : "+10%", "height" : "+0", "anchor" :"top-right" }),
+             l:   S.op("resize", { "width" : "+10%", "height" : "+0", "anchor" :"top-left"  }),
+             i:   S.op("resize", { "width" : "+0",   "height" : "+10%", "anchor" :"bottom-left" }),
+             ',':   S.op("resize", { "width" : "+0",   "height" : "+10%", "anchor" :"top-left" }),
         },
 
         //Resize -10% - key determines which sides contracts (Modal: hyper:h then j/l/i/,)
         shift: {
             h: {
-                j: $.op("resize", { "width": "-10%", "height": "+0", "anchor": "top-right" }),
-                l: $.op("resize", { "width": "-10%", "height": "+0", "anchor": "top-left"  }),
-                i: $.op("resize", { "width": "+0", "height": "-10%", "anchor": "bottom-left" }),
-                ',': $.op("resize", { "width": "+0", "height": "-10%", "anchor": "top-left" }),
+                j: S.op("resize", { "width": "-10%", "height": "+0", "anchor": "top-right" }),
+                l: S.op("resize", { "width": "-10%", "height": "+0", "anchor": "top-left"  }),
+                i: S.op("resize", { "width": "+0", "height": "-10%", "anchor": "bottom-left" }),
+                ',': S.op("resize", { "width": "+0", "height": "-10%", "anchor": "top-left" }),
             }
         },
 
@@ -220,13 +216,16 @@ slate.bindAll({
         t: $.focus('iTerm'),
         f: $.focus('Finder'),
         n: $.focus('Sonos'),
-
         p: $.focus('PyCharm'),
 
         // utility functions
         f1: 'relaunch',
         z: 'undo',
         tab: 'hint',
+
+        //x: S.op("resize", { "width": "-10%", "height": "+0", "anchor": "top-right" }),
+        x: test,
+
     }
 });
 

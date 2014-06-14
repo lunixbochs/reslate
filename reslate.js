@@ -65,9 +65,6 @@ THE SOFTWARE.
  *          Wraps S.log(), toggled by $.debug.
  *          Look in Console.app for the output.
  *
- *   - $.op(arguments):
- *          Enables S.op() calls within a reslate bind.
- *          EG:  $.op("resize", { "width" : "-10%", "height" : "+0"  })
  *
  * 2. $(...) is a convenience function for wrapping Window() methods
  *    inside key bindings
@@ -229,14 +226,6 @@ $ = (function() {
         focus: function(name) {
             name = name.replace('"', '\"');
             return 'focus "' + name + '"';
-        },
-        op: function() {
-            $.log('op', JSON.stringify(arguments));
-            var args=arguments;
-            return function(win) {
-                var JSOperationWrapper = S.op.apply(win, args);
-                JSOperationWrapper.run();
-            };
         },
         chain: function() {
             var ops = [];
@@ -412,6 +401,11 @@ $ = (function() {
             };
         } else if (_.isFunction(op)) {
             func = op;
+        } else if (_.isFunction(op.run)) {
+          func = function(win) {
+              // JSOperationWrapperObject passed in (result of S.op())
+              op.run();
+          };
         } else {
             S.log('unknown op:', op, typeof op);
             return null;
@@ -461,7 +455,7 @@ $ = (function() {
             _.each(aliases, function(mod, alias) {
                 key = key.replace(alias, mod);
             });
-            if (_.isObject(op) && !(_.isArray(op) || _.isFunction(op))) {
+            if (_.isObject(op) && !(_.isArray(op) || _.isFunction(op) || _.isFunction(op.run))) {
                 // nested modifiers
                 slate.bindAll(op, key);
                 return;
