@@ -401,6 +401,11 @@ $ = (function() {
             };
         } else if (_.isFunction(op)) {
             func = op;
+        } else if (_.isFunction(op.run)) {
+          func = function(win) {
+              // JSOperationWrapperObject passed in (result of S.op())
+              op.run();
+          };
         } else {
             S.log('unknown op:', op, typeof op);
             return null;
@@ -450,7 +455,7 @@ $ = (function() {
             _.each(aliases, function(mod, alias) {
                 key = key.replace(alias, mod);
             });
-            if (_.isObject(op) && !(_.isArray(op) || _.isFunction(op))) {
+            if (_.isObject(op) && !(_.isArray(op) || _.isFunction(op) || _.isFunction(op.run))) {
                 // nested modifiers
                 slate.bindAll(op, key);
                 return;
