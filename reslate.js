@@ -284,7 +284,7 @@ $ = (function() {
             'title', 'topLeft', 'size', 'rect', 'pid',
             'focus', 'isMinimizedOrHidden', 'isMain',
             'move', 'isMovable', 'resize', 'isResizable',
-            'doOperation', 'screen', 'app', 'op'
+            'doOperation', 'screen', 'app'
         ],
         _init: function(win) {
             if (win == undefined) {
