@@ -672,7 +672,15 @@ _.extend($.window, {
         var width = s.width / (horiz || 1);
         var height = s.height / (vert || 1);
         this.resize({width: width, height: height});
-	this.move({x: width * (horizPos || 0), y: height * (vertPos || 0)});
+        if ( horizPos && ( ( horiz > 1 && horiz < 2) || horizPos == horiz - 1 ) )
+            width = s.width - width;
+        else
+            width = width * (horizPos || 0);
+        if ( vertPos && ( (vert > 1 && vert < 2) || vertPos && vertPos == vert - 1 ) )
+            height = s.height - height;
+        else
+            height = height * (vertPos || 0);
+        this.move({x: width, y: height});
     },
     move: function(args) {
         // TODO: also allow calling with (x, y)
