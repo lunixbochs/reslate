@@ -30,7 +30,7 @@ slate.configAll({
 function position(win) {
     $.log('position', 'cols:', win.splitx, 'rows:', win.splity, 'x:', win.offx, 'y:', win.offy);
     var snapRight = (win.offx > 1 && win.offx < 2) && win.offx > 0,
-        snapBottom = (win.offy > 1 && win.offy < 2) && win.offy > 0
+        snapBottom = (win.offy > 1 && win.offy < 2) && win.offy > 0;
     win.divResize(win.splitx, win.splity, win.offx, win.offy, snapRight, snapBottom);
 }
 function reset(win, hard) {
@@ -42,7 +42,9 @@ function reset(win, hard) {
     }
 }
 
-steps = [1, 1.5, 2, 3];
+
+var screenCount = slate.screenCount();
+steps = [1.5, 2, 3];
 var lastStep = steps[steps.length-1];
 function nextStep(step) {
     var index = steps.indexOf(step);
@@ -56,7 +58,8 @@ slate.bindAll({
             left: function(win) {
                 reset(win);
                 if (win.offx === 0) {
-                    win.toss('-');
+                    if (screenCount > 1)
+                        win.toss('-');
                     win.offx = Math.ceil(win.splitx) - 1;
                 } else {
                     win.offx--;
@@ -67,7 +70,8 @@ slate.bindAll({
                 reset(win);
                 win.offx++;
                 if (win.offx >= Math.ceil(win.splitx)) {
-                    win.toss('+');
+                    if (screenCount > 1)
+                        win.toss('+');
                     win.offx = 0;
                 }
                 position(win);
@@ -92,7 +96,7 @@ slate.bindAll({
         left: function(win) {
             reset(win);
             if (win.offx === 0) {
-                if (win.splitx === lastStep) {
+                if (screenCount > 1 && win.splitx === lastStep) {
                     reset(win, true);
                     win.toss('-', 'resize');
                 } else {
@@ -104,16 +108,19 @@ slate.bindAll({
                 position(win);
             }
         },
+        j: function(win){this.left(win);},
         right: function(win) {
             reset(win);
             if (win.offx === win.splitx - 1 || win.offx && win.splitx > 1 && win.splitx < 2) {
-                if (win.splitx === lastStep) {
+                if (screenCount > 1 && win.splitx === lastStep) {
                     reset(win, true);
                     win.toss('+', 'resize');
                 } else {
                     var nextSplit = nextStep(win.splitx);
                     if (nextSplit > 2 || !win.offx)
                         win.offx++;
+                    if (nextSplit < win.splitx)
+                        win.offx = Math.ceil(nextSplit) - 1;
                     win.splitx = nextSplit;
                     position(win);
                 }
@@ -122,6 +129,7 @@ slate.bindAll({
                 position(win);
             }
         },
+        l: function(win){this.right(win);},
         up: function(win) {
             reset(win);
             if (win.offy === 0) {
@@ -131,20 +139,22 @@ slate.bindAll({
             }
             position(win);
         },
+        i: function(win){this.up(win);},
         down: function(win) {
             reset(win);
             if (win.offy === win.splity - 1 || win.offy && win.splity > 1 && win.splity < 2) {
                 var nextSplit = nextStep(win.splity);
                 if (nextSplit > 2 || !win.offy)
                     win.offy++;
-                if (nextSplit < win.splity)
-                    win.offy = 0;
+                if (nextSplit < win.splity) 
+                    win.offy = Math.ceil(nextSplit) - 1;
                 win.splity = nextSplit;
             } else {
                 win.offy++;
             }
             position(win);
         },
+        k: function(win){this.down(win);},
         space: function(win) {
             reset(win, true);
             position(win);
@@ -159,8 +169,7 @@ slate.bindAll({
         // direct focus 
         // utility functions
         f1: 'relaunch',
-        z: 'undo',
-        tab: 'hint'
+        z: 'undo'
     }
 });
  
@@ -170,7 +179,7 @@ slate.bindAll({
 function getName() {
   var name = [];
   slate.eachScreen(function(screen){
-    var rect = screen.rect()
+    var rect = screen.rect();
     name.push(rect.width+'x'+rect.height);
   });
   return name;
@@ -185,7 +194,7 @@ function save(event, win){
     save: true
   }).run();
   // slate.default(getName(), getName().join('y'));
-};
+}
  
 // Load snapshot
 function load(event, win){
@@ -193,10 +202,12 @@ function load(event, win){
   slate.operation("activate-snapshot", {
     name: getName().join('y')
   }).run();
-};
+}
 
 // slate.on('windowMoved', save);
 // slate.on('windowResized', save);
 // slate.on('appOpened', load);
 // TODO: Requires 'screenConfigurationChanged' for some reason
-slate.on('screenConfigurationChanged', load);
+slate.on('screenConfigurationChanged', function(){
+    screenCount = slate.screenCount();
+});

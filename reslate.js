@@ -626,11 +626,9 @@ _.extend($.window, {
         div = (div || 2);
         var s = this.screen();
         if (dir == 'left' || dir == 'right') {
-	    this.divResize(div, 1, pos, 0);
-	    // this.snap(dir);
+            this.divResize(div, 1, pos, 0);
         } else if (dir == 'top' || dir == 'bottom') {
-	    this.divResize(1, div, 0, pos);
-	    // this.snap(dir);
+            this.divResize(1, div, 0, pos);
         }
     },
     center: function(dir, horiz, vert) {
