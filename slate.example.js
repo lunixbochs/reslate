@@ -1,14 +1,14 @@
 /* File: slate.example.js
- * Author: lunixbochs (Ryan Hileman)
- * Project: http://github.com/lunixbochs/reslate
+ * Author: lunixbochs (Ryan Hileman) and ProLoser (Dean Sofer)
+ * Project: http://github.com/lunixbochs/reslate https://github.com/ProLoser/reslate
  */
 
-S.src('.reslate.js');
+S.src('.reslate/reslate.js');
 // enable to see debug messages in Console.app
 // $.debug = true;
-
+ 
 slate.alias('hyper', 'ctrl;alt;cmd');
-
+ 
 // begin config
 slate.configAll({
     defaultToCurrentScreen: true,
@@ -27,75 +27,187 @@ slate.configAll({
     ]
 });
 
+function position(win) {
+    $.log('position', 'cols:', win.splitx, 'rows:', win.splity, 'x:', win.offx, 'y:', win.offy);
+    var snapRight = (win.offx > 1 && win.offx < 2) && win.offx > 0,
+        snapBottom = (win.offy > 1 && win.offy < 2) && win.offy > 0;
+    win.divResize(win.splitx, win.splity, win.offx, win.offy, snapRight, snapBottom);
+}
+function reset(win, hard) {
+    if (!win.splitx || hard) {
+        win.splitx = 1;
+        win.splity = 1;
+        win.offx = 0;
+        win.offy = 0;
+    }
+}
+
+
+var screenCount = slate.screenCount();
+steps = [1.5, 2, 3];
+var lastStep = steps[steps.length-1];
+function nextStep(step) {
+    var index = steps.indexOf(step);
+    return (index >= steps.length-1) ? steps[0] : steps[++index];
+}
+
 // bindings
 slate.bindAll({
     hyper: {
         shift: {
-            // edges
-            h: [$('barResize', 'left',   3),
-                $('center',    'left',   3, 3)],
-            j: [$('barResize', 'bottom', 2),
-                $('center',    'bottom', 3, 3)],
-            k: [$('barResize', 'top',    2),
-                $('center',    'top',    3, 3)],
-            l: [$('barResize', 'right',  3),
-                $('center',    'right',  3, 3)],
-
-            // corners
-            y: [$('corner', 'top-left',     3, 2),
-                $('corner', 'top-left',     3, 3)],
-            i: [$('corner', 'top-right',    3, 2),
-                $('corner', 'top-right',    3, 3)],
-            b: [$('corner', 'bottom-left',  3, 2),
-                $('corner', 'bottom-left',  3, 3)],
-            m: [$('corner', 'bottom-right', 3, 2),
-                $('corner', 'bottom-right', 3, 3)],
-
-            // centers
-            u: [$('center', 'top'),
-                $('center', 'top', 3, 3)],
-            n: [$('center', 'bottom'),
-                $('center', 'bottom', 3, 3)],
-            'return': $('center', 'center', 3, 3)
+            left: function(win) {
+                reset(win);
+                if (win.offx === 0) {
+                    if (screenCount > 1)
+                        win.toss('-');
+                    win.offx = Math.ceil(win.splitx) - 1;
+                } else {
+                    win.offx--;
+                }
+                position(win);
+            },
+            right: function(win) {
+                reset(win);
+                win.offx++;
+                if (win.offx >= Math.ceil(win.splitx)) {
+                    if (screenCount > 1)
+                        win.toss('+');
+                    win.offx = 0;
+                }
+                position(win);
+            },
+            up: function(win) {
+                reset(win);
+                if (win.offy === 0) {
+                    win.offy = Math.ceil(win.splity) - 1;
+                } else {
+                    win.offy--;
+                }
+                position(win);
+            },
+            down: function(win) {
+                reset(win);
+                win.offy++;
+                if (win.offy >= Math.ceil(win.splity))
+                    win.offy = 0;
+                position(win);
+            }
         },
-        // bars
-        h: [$('barResize', 'left',  2),
-            $('barResize', 'left',  1.5)],
-        j: $('barResize', 'bottom', 2),
-        k: $('barResize', 'top',    2),
-        l: [$('barResize', 'right', 2),
-            $('barResize', 'right', 1.5)],
-        // corners
-        y: [$('corner', 'top-left'),
-            $('corner', 'top-left', 1.5)],
-        i: [$('corner', 'top-right'),
-            $('corner', 'top-right', 1.5)],
-        b: [$('corner', 'bottom-left'),
-            $('corner', 'bottom-left', 1.5)],
-        m: [$('corner', 'bottom-right'),
-            $('corner', 'bottom-right', 1.5)],
-        // centers
-        u: $('center', 'top'),
-        n: $('center', 'bottom'),
-        'return': $('center', 'center'),
+        left: function(win) {
+            reset(win);
+            if (win.offx === 0) {
+                if (screenCount > 1 && win.splitx === lastStep) {
+                    reset(win, true);
+                    win.toss('-', 'resize');
+                } else {
+                    win.splitx = nextStep(win.splitx);
+                    position(win);
+                }
+            } else {
+                win.offx--;
+                position(win);
+            }
+        },
+        j: function(win){this.left(win);},
+        right: function(win) {
+            reset(win);
+            if (win.offx === win.splitx - 1 || win.offx && win.splitx > 1 && win.splitx < 2) {
+                if (screenCount > 1 && win.splitx === lastStep) {
+                    reset(win, true);
+                    win.toss('+', 'resize');
+                } else {
+                    var nextSplit = nextStep(win.splitx);
+                    if (nextSplit > 2 || !win.offx)
+                        win.offx++;
+                    if (nextSplit < win.splitx)
+                        win.offx = Math.ceil(nextSplit) - 1;
+                    win.splitx = nextSplit;
+                    position(win);
+                }
+            } else {
+                win.offx++;
+                position(win);
+            }
+        },
+        l: function(win){this.right(win);},
+        up: function(win) {
+            reset(win);
+            if (win.offy === 0) {
+                win.splity = nextStep(win.splity);
+            } else {
+                win.offy--;
+            }
+            position(win);
+        },
+        i: function(win){this.up(win);},
+        down: function(win) {
+            reset(win);
+            if (win.offy === win.splity - 1 || win.offy && win.splity > 1 && win.splity < 2) {
+                var nextSplit = nextStep(win.splity);
+                if (nextSplit > 2 || !win.offy)
+                    win.offy++;
+                if (nextSplit < win.splity) 
+                    win.offy = Math.ceil(nextSplit) - 1;
+                win.splity = nextSplit;
+            } else {
+                win.offy++;
+            }
+            position(win);
+        },
+        k: function(win){this.down(win);},
+        space: function(win) {
+            reset(win, true);
+            position(win);
+        },
+        'return': [
+            $('barResize', 'left', 1),
+            $('center', 'center', 1.5, 1.25)
+        ],
         // throw to monitor
         '`': ['throw 0 resize',
               'throw 1 resize'],
-        '1': $('toss', '0', 'resize'),
-        '2': $('toss', '1', 'resize'),
-        '3': $('toss', '2', 'resize'),
         // direct focus 
-        a: $.focus('Adium'),
-        c: $.focus('Google Chrome'),
-        s: $.focus('Sublime Text'),
-        t: $.focus('Terminal'),
-        f: $.focus('Finder'),
-        e: $.focus('Sparrow'),
-        x: $.focus('X11'),
-        p: $.focus('Spotify'),
         // utility functions
         f1: 'relaunch',
-        z: 'undo',
-        tab: 'hint'
+        z: 'undo'
     }
+});
+ 
+// Auto Snapshotting
+ 
+// Returns name generated from screen resolutions
+function getName() {
+  var name = [];
+  slate.eachScreen(function(screen){
+    var rect = screen.rect();
+    name.push(rect.width+'x'+rect.height);
+  });
+  return name;
+}
+ 
+
+// Save snapshot
+function save(event, win){
+  $.log('saved', getName());
+  slate.operation("snapshot", {
+    name: getName().join('y'),
+    save: true
+  }).run();
+  // slate.default(getName(), getName().join('y'));
+}
+ 
+// Load snapshot
+function load(event, win){
+  $.log('loaded', getName());
+  slate.operation("activate-snapshot", {
+    name: getName().join('y')
+  }).run();
+}
+
+// slate.on('windowMoved', save);
+// slate.on('windowResized', save);
+// slate.on('appOpened', load);
+// TODO: Requires 'screenConfigurationChanged' for some reason
+slate.on('screenConfigurationChanged', function(){
+    screenCount = slate.screenCount();
 });

@@ -624,15 +624,11 @@ _.extend($.rect, {
 _.extend($.window, {
     barResize: function(dir, div, pos) {
         div = (div || 2);
-        // TODO: pos has been unimplemented
-        pos = (pos || 0);
         var s = this.screen();
         if (dir == 'left' || dir == 'right') {
-            this.divResize(div, 1);
-            this.snap(dir);
+            this.divResize(div, 1, pos, 0);
         } else if (dir == 'top' || dir == 'bottom') {
-            this.divResize(1, div);
-            this.snap(dir);
+            this.divResize(1, div, 0, pos);
         }
     },
     center: function(dir, horiz, vert) {
@@ -669,11 +665,20 @@ _.extend($.window, {
         this.divResize(horiz || 2, vert || 2);
         this.snap(corner);
     },
-    divResize: function(horiz, vert) {
+    divResize: function(horiz, vert, horizPos, vertPos) {
         var s = this.screen();
         var width = s.width / (horiz || 1);
         var height = s.height / (vert || 1);
         this.resize({width: width, height: height});
+        if ( horizPos && ( ( horiz > 1 && horiz < 2) || horizPos == horiz - 1 ) )
+            width = s.width - width;
+        else
+            width = width * (horizPos || 0);
+        if ( vertPos && ( (vert > 1 && vert < 2) || vertPos && vertPos == vert - 1 ) )
+            height = s.height - height;
+        else
+            height = height * (vertPos || 0);
+        this.move({x: width, y: height});
     },
     move: function(args) {
         // TODO: also allow calling with (x, y)
@@ -759,6 +764,18 @@ _.extend($.window, {
         return this.toss.apply(this, arguments);
     },
     toss: function(num, resize) {
+        var count, current;
+        if (num === '+' || num === '-') {
+            count = slate.screenCount();
+            $.log('count', count);
+            current = this.screen().id();
+            $.log('current', current);
+            num = (num === '+') ? ++current : --current;
+            count--;
+            if (num > count) num = 0;
+            if (num < 0) num = count;
+            $.log('selected', num);
+        }
         var screen = slate.screenForRef(num.toString());
         var s = $.screen(screen);
         if (resize)
